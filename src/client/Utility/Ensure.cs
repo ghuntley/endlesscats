@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace Utility
+namespace EndlessCatsApp.Utility
 {
     /// <summary>
     /// https://raw.githubusercontent.com/kentcb/WorkoutWotch/master/Src/WorkoutWotch.Utility/Ensure.cs
