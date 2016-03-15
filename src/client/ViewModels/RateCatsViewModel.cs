@@ -3,7 +3,6 @@ using System.Reactive;
 using Anotar.Splat;
 using EndlessCatsApp.Services;
 using EndlessCatsApp.Services.Api;
-using EndlessCatsApp.Services.ServiceModel;
 using EndlessCatsApp.Services.State;
 using EndlessCatsApp.Utility;
 using ReactiveUI;

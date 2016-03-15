@@ -39,9 +39,9 @@
     <Compile Include="Api\ICatsApi.cs" />
     <Compile Include="Api\ICatsApiService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceModel\Cat.cs" />
-    <Compile Include="ServiceModel\GetCatsResponse.cs" />
-    <Compile Include="ServiceModel\GetFavouriteCatsResponse.cs" />
+    <Compile Include="Api\Cat.cs" />
+    <Compile Include="Api\GetCatsResponse.cs" />
+    <Compile Include="Api\GetFavouriteCatsResponse.cs" />
     <Compile Include="State\IStateService.cs" />
   </ItemGroup>
   <ItemGroup>

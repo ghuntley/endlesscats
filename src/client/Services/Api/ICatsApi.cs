@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using EndlessCatsApp.Services.ServiceModel;
 using Refit;
 
 namespace EndlessCatsApp.Services.Api
