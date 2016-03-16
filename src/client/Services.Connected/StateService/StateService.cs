@@ -97,6 +97,23 @@ namespace EndlessCatsApp.Services.Connected.StateService
             }
         }
 
+
+        public IObservable<Unit> Invalidate(string key)
+        {
+            Ensure.ArgumentNotNull(key, nameof(key));
+
+            return _blobCache
+                .Invalidate(key);
+        }
+
+        public IObservable<Unit> Set<T>(string key, T value, TimeSpan expiration)
+        {
+            Ensure.ArgumentNotNull(key, nameof(key));
+
+            return _blobCache
+                .InsertObject(key, value, expiration);
+        }
+
         private sealed class RegistrationHandle : DisposableBase
         {
             private readonly StateService _owner;

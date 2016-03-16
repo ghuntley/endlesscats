@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using Anotar.Splat;
-using EndlessCatsApp.Services;
+using EndlessCatsApp.Core;
 using EndlessCatsApp.Services.Api;
+using EndlessCatsApp.Services.Rating;
 using EndlessCatsApp.Services.State;
 using EndlessCatsApp.Utility;
 using ReactiveUI;
@@ -12,18 +16,24 @@ namespace EndlessCatsApp.ViewModels
 {
     public class RateCatsViewModel : ReactiveObject
     {
-        private readonly IStateService _stateService;
-        private readonly ICatsApiService _catsApiService;
+        private const string CatsCacheKey = BlobCacheKeys.Cats;
 
-        public RateCatsViewModel(IStateService stateService, ICatsApiService catsApiService)
+        private readonly ICatsApiService _catsApiService;
+        private readonly IRatingService _ratingService;
+        private readonly IStateService _stateService;
+
+        public RateCatsViewModel(ICatsApiService catsApiService, IStateService stateService,
+            IRatingService ratingService)
         {
-            Ensure.ArgumentNotNull(stateService, nameof(stateService));
             Ensure.ArgumentNotNull(catsApiService, nameof(catsApiService));
+            Ensure.ArgumentNotNull(stateService, nameof(stateService));
+            Ensure.ArgumentNotNull(ratingService, nameof(ratingService));
 
             // assignments
 
-            _stateService = stateService;
             _catsApiService = catsApiService;
+            _ratingService = ratingService;
+            _stateService = stateService;
 
             // default values
 
@@ -52,52 +62,95 @@ namespace EndlessCatsApp.ViewModels
                         () => $"Error occurred whilst liking cat: {SelectedCat.Identifier}", ex);
                 });
 
-            ForceReload.ThrownExceptions
+            ForceRefresh = ReactiveCommand.CreateAsyncObservable(x => ExpireCacheAndGetCats());
+            ForceRefresh.Subscribe(cats => ClearAndAddCats(cats));
+            ForceRefresh.ThrownExceptions
                 .Subscribe(ex =>
                 {
                     LogTo.ErrorException(
                         () => $"Error occurred whilst expiring the cache and reloading cats", ex);
                 });
 
-            Reload.ThrownExceptions
+            Refresh = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromCacheOrApi());
+            Refresh.Subscribe(cats => ClearAndAddCats(cats));
+            Refresh.ThrownExceptions
                 .Subscribe(ex =>
                 {
                     LogTo.ErrorException(
-                        () => $"Error occurred whilst loading cats from the cache", ex);
+                        () => $"Error occurred whilst loading cats from the cache and api", ex);
                 });
 
-            Reload.IsExecuting.ToPropertyEx(this, x => x.IsLoading);
-
+            Refresh.IsExecuting.ToPropertyEx(this, x => x.IsLoading);
 
             // behaviours
-
         }
 
+        public ReactiveCommand<Unit> AddMoreCats { get; private set; }
+
         public ReactiveList<Cat> Cats { get; private set; }
+
+        public ReactiveCommand<Unit> DislikeCat { get; private set; }
+
+        public ReactiveCommand<IEnumerable<Cat>> ForceRefresh { get; }
 
         [ObservableAsProperty]
         public bool IsLoading { get; }
 
+        public ReactiveCommand<Unit> LikeCat { get; private set; }
+
+        public ReactiveCommand<IEnumerable<Cat>> Refresh { get; }
 
         [Reactive]
         public Cat SelectedCat { get; set; }
 
-        public ReactiveCommand<Unit> LikeCat { get; private set; }
-        public ReactiveCommand<Unit> DislikeCat { get; private set; }
+        private void ClearAndAddCats(IEnumerable<Cat> cats)
+        {
+            // ReSharper disable PossibleMultipleEnumeration
+            Ensure.ArgumentNotNull(cats, nameof(cats));
 
-        public ReactiveCommand<Unit> Reload { get; private set; }
+            using (Cats.SuppressChangeNotifications())
+            {
+                Cats.Clear();
+                Cats.AddRange(cats);
+            }
+            // ReSharper restore PossibleMultipleEnumeration
+        }
 
-        public ReactiveCommand<Unit> ForceReload { get; private set; }
+        private IObservable<IEnumerable<Cat>> ExpireCacheAndGetCats()
+        {
+            _stateService.Invalidate(BlobCacheKeys.Cats);
+            return GetCatsFromCacheOrApi();
+        }
 
-        public ReactiveCommand<Unit> AddMoreCats { get; private set; }
+        private IObservable<IEnumerable<Cat>> GetCatsFromApi()
+        {
+            var service = _catsApiService.UserInitiated.GetCats();
+            return service.Select(response =>
+            {
+                _stateService.Set(CatsCacheKey, response.Results);
 
-        //private IObservable<GetCatsResponse> GetAndFetchLatestFeed()
-        //{
-        //    return _blobCache.GetAndFetchLatest(BlobCacheKeys.Cats,
-        //        async () => await _catsApiService.Background.GetCats(),
-        //        datetimeOffset => true, 
-        //        RxApp.MainThreadScheduler.Now + TimeSpan.FromDays(7));
-        //}
+                LogTo.Info(() => $"{response.Results.Count()} cats were retrieved from the API and persisted to the cache.");
 
+                return new List<Cat>(response.Results);
+            });
+        }
+
+        private IObservable<IEnumerable<Cat>> GetCatsFromCacheOrApi()
+        {
+            return _stateService.Get<IEnumerable<Cat>>(CatsCacheKey)
+                .Catch<IEnumerable<Cat>, KeyNotFoundException>(ex =>
+                {
+                    LogTo.Info(() => "No cats were found in the cache, fetching cats from the API.");
+
+                    return GetCatsFromApi();
+                })
+                .Catch<IEnumerable<Cat>, Exception>(ex =>
+                {
+                    LogTo.ErrorException(
+                        () => "Error occured whilst fetching cats from the API, defaulting to no cats.", ex);
+
+                    return Observable.Return(Enumerable.Empty<Cat>());
+                });
+        }
     }
 }

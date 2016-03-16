@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Refit;
 
 namespace EndlessCatsApp.Services.Api
@@ -6,7 +7,7 @@ namespace EndlessCatsApp.Services.Api
     public interface ICatsApi
     {
         [Get("/cats")]
-        Task<GetCatsResponse> GetCats();
+        IObservable<GetCatsResponse> GetCats();
 
     }
 }

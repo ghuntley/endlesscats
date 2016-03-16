@@ -10,8 +10,11 @@ namespace EndlessCatsApp.Services.State
         IObservable<T> Get<T>(string key);
 
         IObservable<Unit> Set<T>(string key, T value);
+        IObservable<Unit> Set<T>(string key, T value, TimeSpan expiration);
 
         IObservable<Unit> Remove<T>(string key);
+
+        IObservable<Unit> Invalidate(string key);
 
         IObservable<Unit> Save();
 
