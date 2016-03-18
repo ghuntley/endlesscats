@@ -139,7 +139,7 @@ namespace EndlessCatsApp.ViewModels
         {
             return _stateService.Get<IEnumerable<Cat>>(CatsCacheKey)
                 .Catch<IEnumerable<Cat>, KeyNotFoundException>(ex =>
-                {
+                { 
                     LogTo.Info(() => "No cats were found in the cache, fetching cats from the API.");
 
                     return GetCatsFromApi();

@@ -42,6 +42,7 @@
     <Compile Include="Api\Cat.cs" />
     <Compile Include="Api\GetCatsResponse.cs" />
     <Compile Include="Api\GetFavouriteCatsResponse.cs" />
+    <Compile Include="Rating\IRatingService.cs" />
     <Compile Include="State\IStateService.cs" />
   </ItemGroup>
   <ItemGroup>
