@@ -4,6 +4,7 @@ using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Testing;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EndlessCatsApi.Tests
 {
@@ -29,7 +30,7 @@ namespace EndlessCatsApi.Tests
         }
 
         [Test]
-        public async void GetCatsReturnsAtleast50Cats()
+        public async Task GetCatsReturnsAtleast50Cats()
         {
             var service = _appHost.Container.Resolve<WebServices>();
 
