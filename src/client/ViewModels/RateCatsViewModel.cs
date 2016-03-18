@@ -86,7 +86,7 @@ namespace EndlessCatsApp.ViewModels
             Refresh = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromCacheOrApi());
             Refresh.Subscribe(cats =>
             {
-                LogTo.Info(() => $"{cats.Count()} cats were retrieved from the cache or the api.");
+                LogTo.Info(() => $"{cats.Count} cats were retrieved from the cache or the api.");
 
                 ClearAndAddCats(cats);
             });
@@ -145,7 +145,7 @@ namespace EndlessCatsApp.ViewModels
             Ensure.ArgumentNotNull(cats, nameof(cats));
 
             Cats.AddRange(cats);
-            LogTo.Info(() => $"{cats.Count()} cats were added to the list.");
+            LogTo.Info(() => $"{cats.Count} cats were added to the list.");
         }
 
         [LogToErrorOnException]
@@ -191,14 +191,14 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private void PersistCatsToCache(IEnumerable<Cat> cats)
+        private void PersistCatsToCache(IList<Cat> cats)
         {
             // ReSharper disable PossibleMultipleEnumeration
 
             Ensure.ArgumentNotNull(cats, nameof(cats));
 
             _stateService.Set(CatsCacheKey, cats, TimeSpan.FromDays(365));
-            LogTo.Info(() => $"{cats.Count()} cats were persisted to the cache.");
+            LogTo.Info(() => $"{cats.Count} cats were persisted to the cache.");
 
             // ReSharper restore PossibleMultipleEnumeration
         }
