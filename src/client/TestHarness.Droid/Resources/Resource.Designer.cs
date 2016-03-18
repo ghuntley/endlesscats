@@ -26,8 +26,6 @@ namespace EndlessCatsApp.TestHarness.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::EndlessCatsApp.UnitTests.Droid.Resource.String.ApplicationName = global::EndlessCatsApp.TestHarness.Droid.Resource.String.ApplicationName;
-			global::EndlessCatsApp.UnitTests.Droid.Resource.String.Hello = global::EndlessCatsApp.TestHarness.Droid.Resource.String.Hello;
 			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::EndlessCatsApp.TestHarness.Droid.Resource.Id.OptionHostName;
 			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::EndlessCatsApp.TestHarness.Droid.Resource.Id.OptionPort;
 			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::EndlessCatsApp.TestHarness.Droid.Resource.Id.OptionRemoteServer;
