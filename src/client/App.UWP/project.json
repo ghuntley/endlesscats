@@ -1,8 +1,5 @@
 ﻿{
   "dependencies": {
-    "Microsoft.ApplicationInsights": "2.0.0",
-    "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
-    "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "reactiveui": "6.5.0",
     "splat": "1.6.2"
