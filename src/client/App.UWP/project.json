@@ -1,8 +1,14 @@
 ﻿{
   "dependencies": {
+    "akavache": {
+      "version": "4.1.2",
+      "suppressParent": "none"
+    },
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "reactiveui": "6.5.0",
-    "splat": "1.6.2"
+    "refit": "2.4.1",
+    "splat": "1.6.2",
+    "SQLitePCL.raw_basic": "0.8.6"
   },
   "frameworks": {
     "uap10.0": {}

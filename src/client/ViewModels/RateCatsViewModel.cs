@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Anotar.Splat;
 using EndlessCatsApp.Core;
 using EndlessCatsApp.Services.Api;
@@ -37,30 +38,32 @@ namespace EndlessCatsApp.ViewModels
 
             // default values
 
+            Cats = new ReactiveList<Cat>();
             SelectedCat = new Cat();
 
             // logic
 
-            AddMoreCats.ThrownExceptions
-                .Subscribe(ex =>
-                {
-                    LogTo.ErrorException(
-                        () => $"Error occurred whilst adding more cats", ex);
-                });
 
-            DislikeCat.ThrownExceptions
-                .Subscribe(ex =>
-                {
-                    LogTo.ErrorException(
-                        () => $"Error occurred whilst disliking cat: {SelectedCat.Identifier}", ex);
-                });
+            //AddMoreCats.ThrownExceptions
+            //    .Subscribe(ex =>
+            //    {
+            //        LogTo.ErrorException(
+            //            () => $"Error occurred whilst adding more cats", ex);
+            //    });
 
-            LikeCat.ThrownExceptions
-                .Subscribe(ex =>
-                {
-                    LogTo.ErrorException(
-                        () => $"Error occurred whilst liking cat: {SelectedCat.Identifier}", ex);
-                });
+            //DislikeCat.ThrownExceptions
+            //    .Subscribe(ex =>
+            //    {
+            //        LogTo.ErrorException(
+            //            () => $"Error occurred whilst disliking cat: {SelectedCat.Identifier}", ex);
+            //    });
+
+            //LikeCat.ThrownExceptions
+            //    .Subscribe(ex =>
+            //    {
+            //        LogTo.ErrorException(
+            //            () => $"Error occurred whilst liking cat: {SelectedCat.Identifier}", ex);
+            //    });
 
             ForceRefresh = ReactiveCommand.CreateAsyncObservable(x => ExpireCacheAndGetCats());
             ForceRefresh.Subscribe(cats => ClearAndAddCats(cats));
@@ -112,6 +115,8 @@ namespace EndlessCatsApp.ViewModels
             {
                 Cats.Clear();
                 Cats.AddRange(cats);
+                LogTo.Info(() => $"{cats.Count()} cats were added to the list.");
+
             }
             // ReSharper restore PossibleMultipleEnumeration
         }

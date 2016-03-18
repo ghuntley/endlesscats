@@ -6,7 +6,7 @@ namespace EndlessCatsApp.Services.Api
 {
     public interface ICatsApi
     {
-        [Get("/cats")]
+        [Get("/cats?format=json")]
         IObservable<GetCatsResponse> GetCats();
 
     }

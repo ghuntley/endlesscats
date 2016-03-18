@@ -1,14 +1,10 @@
-﻿using EndlessCatsApp.Services.Rating;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EndlessCatsApp.Services.Api;
+﻿using System;
 using System.Reactive;
+using EndlessCatsApp.Services.Api;
+using EndlessCatsApp.Services.Rating;
 using EndlessCatsApp.Utility;
 
-namespace EndlessCatsApp.Services.Connected.RatingService
+namespace EndlessCatsApp.Services.Connected.Rating
 {
     public class RatingService : IRatingService
     {

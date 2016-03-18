@@ -1,16 +1,16 @@
-﻿using Akavache;
-using Anotar.Splat;
-using EndlessCatsApp.Services.State;
-using EndlessCatsApp.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Akavache;
+using Anotar.Splat;
+using EndlessCatsApp.Services.State;
+using EndlessCatsApp.Utility;
 
-namespace EndlessCatsApp.Services.Connected.StateService
+namespace EndlessCatsApp.Services.Connected.State
 {
     public sealed class StateService : IStateService
     {

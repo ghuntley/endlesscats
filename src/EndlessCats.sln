@@ -387,7 +387,7 @@ Global
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.AppStore|iPhoneSimulator.Build.0 = AppStore|iPhoneSimulator
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.AppStore|x64.ActiveCfg = AppStore|iPhoneSimulator
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.AppStore|x86.ActiveCfg = AppStore|iPhoneSimulator
-		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.Debug|ARM.ActiveCfg = Debug|iPhoneSimulator
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.Debug|iPhone.ActiveCfg = Debug|iPhone
 		{0B8CDC8E-E483-41A6-AD3E-B717B86B2370}.Debug|iPhone.Build.0 = Debug|iPhone
@@ -1127,14 +1127,14 @@ Global
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.AppStore|iPhoneSimulator.Build.0 = AppStore|iPhoneSimulator
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.AppStore|x64.ActiveCfg = AppStore|iPhone
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.AppStore|x86.ActiveCfg = AppStore|iPhone
-		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|Any CPU.ActiveCfg = Debug|iPhone
-		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|ARM.ActiveCfg = Debug|iPhone
+		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|ARM.ActiveCfg = Debug|iPhoneSimulator
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|iPhone.ActiveCfg = Debug|iPhone
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|iPhone.Build.0 = Debug|iPhone
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
-		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|x64.ActiveCfg = Debug|iPhone
-		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|x86.ActiveCfg = Debug|iPhone
+		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|x64.ActiveCfg = Debug|iPhoneSimulator
+		{12146DC3-35E5-41DF-B527-1890A8A31971}.Debug|x86.ActiveCfg = Debug|iPhoneSimulator
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Release|Any CPU.ActiveCfg = Release|iPhone
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Release|ARM.ActiveCfg = Release|iPhone
 		{12146DC3-35E5-41DF-B527-1890A8A31971}.Release|iPhone.ActiveCfg = Release|iPhone
