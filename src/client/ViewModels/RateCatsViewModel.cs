@@ -43,27 +43,30 @@ namespace EndlessCatsApp.ViewModels
 
             // logic
 
+            AddMoreCats = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromApi());
+            AddMoreCats.Subscribe(cats => AddCats(cats));
+            AddMoreCats.ThrownExceptions
+                .Subscribe(ex =>
+                {
+                    LogTo.ErrorException(
+                        () => $"Error occurred whilst adding more cats", ex);
+                });
 
-            //AddMoreCats.ThrownExceptions
-            //    .Subscribe(ex =>
-            //    {
-            //        LogTo.ErrorException(
-            //            () => $"Error occurred whilst adding more cats", ex);
-            //    });
+            DislikeCat = ReactiveCommand.CreateAsyncObservable(x => RemoveCat(SelectedCat));
+            DislikeCat.ThrownExceptions
+                .Subscribe(ex =>
+                {
+                    LogTo.ErrorException(
+                        () => $"Error occurred whilst disliking cat: {SelectedCat.Identifier}", ex);
+                });
 
-            //DislikeCat.ThrownExceptions
-            //    .Subscribe(ex =>
-            //    {
-            //        LogTo.ErrorException(
-            //            () => $"Error occurred whilst disliking cat: {SelectedCat.Identifier}", ex);
-            //    });
-
-            //LikeCat.ThrownExceptions
-            //    .Subscribe(ex =>
-            //    {
-            //        LogTo.ErrorException(
-            //            () => $"Error occurred whilst liking cat: {SelectedCat.Identifier}", ex);
-            //    });
+            LikeCat = ReactiveCommand.CreateAsyncObservable(x => RemoveCat(SelectedCat));
+            LikeCat.ThrownExceptions
+                .Subscribe(ex =>
+                {
+                    LogTo.ErrorException(
+                        () => $"Error occurred whilst liking cat: {SelectedCat.Identifier}", ex);
+                });
 
             ForceRefresh = ReactiveCommand.CreateAsyncObservable(x => ExpireCacheAndGetCats());
             ForceRefresh.Subscribe(cats => ClearAndAddCats(cats));
@@ -91,21 +94,20 @@ namespace EndlessCatsApp.ViewModels
             this.WhenAnyValue(x => x.Cats)
                 .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
                 .Subscribe(cats => PersistCatsToCache(cats));
-
         }
 
-        public ReactiveCommand<Unit> AddMoreCats { get; private set; }
+        public ReactiveCommand<IEnumerable<Cat>> AddMoreCats { get; }
 
-        public ReactiveList<Cat> Cats { get; private set; }
+        public ReactiveList<Cat> Cats { get; }
 
-        public ReactiveCommand<Unit> DislikeCat { get; private set; }
+        public ReactiveCommand<Cat> DislikeCat { get; }
 
         public ReactiveCommand<IEnumerable<Cat>> ForceRefresh { get; }
 
         [ObservableAsProperty]
         public bool IsLoading { get; }
 
-        public ReactiveCommand<Unit> LikeCat { get; private set; }
+        public ReactiveCommand<Cat> LikeCat { get; }
 
         public ReactiveCommand<IEnumerable<Cat>> Refresh { get; }
 
@@ -121,11 +123,40 @@ namespace EndlessCatsApp.ViewModels
             using (Cats.SuppressChangeNotifications())
             {
                 Cats.Clear();
-                Cats.AddRange(cats);
-                LogTo.Info(() => $"{cats.Count()} cats were added to the list.");
-
+                AddCats(cats);
             }
             // ReSharper restore PossibleMultipleEnumeration
+        }
+
+        [LogToErrorOnException]
+        private void AddCats(IEnumerable<Cat> cats)
+        {
+            // ReSharper disable PossibleMultipleEnumeration
+            Ensure.ArgumentNotNull(cats, nameof(cats));
+
+            Cats.AddRange(cats);
+            LogTo.Info(() => $"{cats.Count()} cats were added to the list.");
+            // ReSharper restore PossibleMultipleEnumeration
+        }
+
+        [LogToErrorOnException]
+        private IObservable<Cat> RemoveCat(Cat cat)
+        {
+            Ensure.ArgumentNotNull(cat, nameof(cat));
+
+            var catToRemove = Cats.SingleOrDefault(x => x.Identifier == cat.Identifier);
+            if (catToRemove != null)
+            {
+                Cats.Remove(catToRemove);
+                LogTo.Info(() => $"{cat.Identifier} has been removed from the list.");
+
+            }
+            else
+            {
+                LogTo.Error(() => $"{cat.Identifier} was requested to be removed from the list but does not exist within the list.");
+            }
+
+            return Observable.Return(cat);
         }
 
         [LogToErrorOnException]
@@ -143,7 +174,8 @@ namespace EndlessCatsApp.ViewModels
             {
                 _stateService.Set(CatsCacheKey, response.Results);
 
-                LogTo.Info(() => $"{response.Results.Count()} cats were retrieved from the API and persisted to the cache.");
+                LogTo.Info(
+                    () => $"{response.Results.Count()} cats were retrieved from the API and persisted to the cache.");
 
                 return new List<Cat>(response.Results);
             });
@@ -167,7 +199,7 @@ namespace EndlessCatsApp.ViewModels
         {
             return _stateService.Get<IEnumerable<Cat>>(CatsCacheKey)
                 .Catch<IEnumerable<Cat>, KeyNotFoundException>(ex =>
-                { 
+                {
                     LogTo.Info(() => "No cats were found in the cache, fetching cats from the API.");
 
                     return GetCatsFromApi();
@@ -175,7 +207,9 @@ namespace EndlessCatsApp.ViewModels
                 .Catch<IEnumerable<Cat>, Exception>(ex =>
                 {
                     LogTo.ErrorException(
-                        () => "Error occured whilst fetching cats from the API, defaulting to no cats.", ex);
+                        () =>
+                            "No cats were found int the cache and an error occured whilst fetching cats from the API, defaulting to no cats.",
+                        ex);
 
                     return Observable.Return(Enumerable.Empty<Cat>());
                 });
