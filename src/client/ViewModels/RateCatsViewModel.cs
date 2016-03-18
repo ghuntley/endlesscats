@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -44,12 +45,17 @@ namespace EndlessCatsApp.ViewModels
             // logic
 
             AddMoreCats = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromApi());
-            AddMoreCats.Subscribe(cats => AddCats(cats));
+            AddMoreCats.Subscribe(cats =>
+            {
+                LogTo.Info(() => $"{cats.Count()} cats were retrieved from the api.");
+
+                AddCats(cats);
+            });
             AddMoreCats.ThrownExceptions
                 .Subscribe(ex =>
                 {
                     LogTo.ErrorException(
-                        () => $"Error occurred whilst adding more cats", ex);
+                        () => $"Error occurred whilst adding more cats.", ex);
                 });
 
             DislikeCat = ReactiveCommand.CreateAsyncObservable(x => RemoveCat(SelectedCat));
@@ -74,16 +80,21 @@ namespace EndlessCatsApp.ViewModels
                 .Subscribe(ex =>
                 {
                     LogTo.ErrorException(
-                        () => $"Error occurred whilst expiring the cache and reloading cats", ex);
+                        () => $"Error occurred whilst expiring the cache and reloading cats.", ex);
                 });
 
             Refresh = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromCacheOrApi());
-            Refresh.Subscribe(cats => ClearAndAddCats(cats));
+            Refresh.Subscribe(cats =>
+            {
+                LogTo.Info(() => $"{cats.Count()} cats were retrieved from the cache or the api.");
+
+                ClearAndAddCats(cats);
+            });
             Refresh.ThrownExceptions
                 .Subscribe(ex =>
                 {
                     LogTo.ErrorException(
-                        () => $"Error occurred whilst loading cats from the cache and api", ex);
+                        () => $"Error occurred whilst loading cats from the cache or the api.", ex);
                 });
 
             Refresh.IsExecuting.ToPropertyEx(this, x => x.IsLoading);
@@ -96,26 +107,26 @@ namespace EndlessCatsApp.ViewModels
                 .Subscribe(cats => PersistCatsToCache(cats));
         }
 
-        public ReactiveCommand<IEnumerable<Cat>> AddMoreCats { get; }
+        public ReactiveCommand<IList<Cat>> AddMoreCats { get; }
 
         public ReactiveList<Cat> Cats { get; }
 
         public ReactiveCommand<Cat> DislikeCat { get; }
 
-        public ReactiveCommand<IEnumerable<Cat>> ForceRefresh { get; }
+        public ReactiveCommand<IList<Cat>> ForceRefresh { get; }
 
         [ObservableAsProperty]
         public bool IsLoading { get; }
 
         public ReactiveCommand<Cat> LikeCat { get; }
 
-        public ReactiveCommand<IEnumerable<Cat>> Refresh { get; }
+        public ReactiveCommand<IList<Cat>> Refresh { get; }
 
         [Reactive]
         public Cat SelectedCat { get; set; }
 
         [LogToErrorOnException]
-        private void ClearAndAddCats(IEnumerable<Cat> cats)
+        private void ClearAndAddCats(IList<Cat> cats)
         {
             // ReSharper disable PossibleMultipleEnumeration
             Ensure.ArgumentNotNull(cats, nameof(cats));
@@ -129,14 +140,12 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private void AddCats(IEnumerable<Cat> cats)
+        private void AddCats(IList<Cat> cats)
         {
-            // ReSharper disable PossibleMultipleEnumeration
             Ensure.ArgumentNotNull(cats, nameof(cats));
 
             Cats.AddRange(cats);
             LogTo.Info(() => $"{cats.Count()} cats were added to the list.");
-            // ReSharper restore PossibleMultipleEnumeration
         }
 
         [LogToErrorOnException]
@@ -160,14 +169,14 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private IObservable<IEnumerable<Cat>> ExpireCacheAndGetCats()
+        private IObservable<IList<Cat>> ExpireCacheAndGetCats()
         {
             _stateService.Invalidate(BlobCacheKeys.Cats);
             return GetCatsFromCacheOrApi();
         }
 
         [LogToErrorOnException]
-        private IObservable<IEnumerable<Cat>> GetCatsFromApi()
+        private IObservable<IList<Cat>> GetCatsFromApi()
         {
             var service = _catsApiService.UserInitiated.GetCats();
             return service.Select(response =>
@@ -175,7 +184,7 @@ namespace EndlessCatsApp.ViewModels
                 _stateService.Set(CatsCacheKey, response.Results);
 
                 LogTo.Info(
-                    () => $"{response.Results.Count()} cats were retrieved from the API and persisted to the cache.");
+                    () => $"{response.Results.Count()} cats were retrieved from the API.");
 
                 return new List<Cat>(response.Results);
             });
@@ -195,23 +204,23 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private IObservable<IEnumerable<Cat>> GetCatsFromCacheOrApi()
+        private IObservable<IList<Cat>> GetCatsFromCacheOrApi()
         {
-            return _stateService.Get<IEnumerable<Cat>>(CatsCacheKey)
-                .Catch<IEnumerable<Cat>, KeyNotFoundException>(ex =>
+            return _stateService.Get<IList<Cat>>(CatsCacheKey)
+                .Catch<IList<Cat>, KeyNotFoundException>(ex =>
                 {
                     LogTo.Info(() => "No cats were found in the cache, fetching cats from the API.");
 
                     return GetCatsFromApi();
                 })
-                .Catch<IEnumerable<Cat>, Exception>(ex =>
+                .Catch<IList<Cat>, Exception>(ex =>
                 {
                     LogTo.ErrorException(
                         () =>
                             "No cats were found int the cache and an error occured whilst fetching cats from the API, defaulting to no cats.",
                         ex);
 
-                    return Observable.Return(Enumerable.Empty<Cat>());
+                    return Observable.Return(new List<Cat>());
                 });
         }
     }
