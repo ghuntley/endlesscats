@@ -86,6 +86,12 @@ namespace EndlessCatsApp.ViewModels
             Refresh.IsExecuting.ToPropertyEx(this, x => x.IsLoading);
 
             // behaviours
+
+            // when the list of cats changes AND after 2 seconds of inactivity, persist the cats to the cache.
+            this.WhenAnyValue(x => x.Cats)
+                .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
+                .Subscribe(cats => PersistCatsToCache(cats));
+
         }
 
         public ReactiveCommand<Unit> AddMoreCats { get; private set; }
@@ -106,6 +112,7 @@ namespace EndlessCatsApp.ViewModels
         [Reactive]
         public Cat SelectedCat { get; set; }
 
+        [LogToErrorOnException]
         private void ClearAndAddCats(IEnumerable<Cat> cats)
         {
             // ReSharper disable PossibleMultipleEnumeration
@@ -121,12 +128,14 @@ namespace EndlessCatsApp.ViewModels
             // ReSharper restore PossibleMultipleEnumeration
         }
 
+        [LogToErrorOnException]
         private IObservable<IEnumerable<Cat>> ExpireCacheAndGetCats()
         {
             _stateService.Invalidate(BlobCacheKeys.Cats);
             return GetCatsFromCacheOrApi();
         }
 
+        [LogToErrorOnException]
         private IObservable<IEnumerable<Cat>> GetCatsFromApi()
         {
             var service = _catsApiService.UserInitiated.GetCats();
@@ -140,6 +149,20 @@ namespace EndlessCatsApp.ViewModels
             });
         }
 
+        [LogToErrorOnException]
+        private void PersistCatsToCache(IEnumerable<Cat> cats)
+        {
+            // ReSharper disable PossibleMultipleEnumeration
+
+            Ensure.ArgumentNotNull(cats, nameof(cats));
+
+            _stateService.Set(CatsCacheKey, cats, TimeSpan.FromDays(365));
+            LogTo.Info(() => $"{cats.Count()} cats were persisted to the cache.");
+
+            // ReSharper restore PossibleMultipleEnumeration
+        }
+
+        [LogToErrorOnException]
         private IObservable<IEnumerable<Cat>> GetCatsFromCacheOrApi()
         {
             return _stateService.Get<IEnumerable<Cat>>(CatsCacheKey)
