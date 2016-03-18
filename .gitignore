@@ -40,6 +40,10 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+# NCrunch
+*.ncrunchproject
+*.ncrunchsolution
+
 # DNX
 project.lock.json
 artifacts/
