@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Anotar.Splat;
 using EndlessCatsApp.Core;
 using EndlessCatsApp.Services.Api;
@@ -47,7 +44,7 @@ namespace EndlessCatsApp.ViewModels
             AddMoreCats = ReactiveCommand.CreateAsyncObservable(x => GetCatsFromApi());
             AddMoreCats.Subscribe(cats =>
             {
-                LogTo.Info(() => $"{cats.Count()} cats were retrieved from the api.");
+                LogTo.Info(() => $"{cats.Count} cats were retrieved from the api.");
 
                 AddCats(cats);
             });
@@ -97,14 +94,27 @@ namespace EndlessCatsApp.ViewModels
                         () => $"Error occurred whilst loading cats from the cache or the api.", ex);
                 });
 
-            Refresh.IsExecuting.ToPropertyEx(this, x => x.IsLoading);
+            Refresh.IsExecuting.ToPropertyEx(this, vm => vm.IsLoading);
 
             // behaviours
 
             // when the list of cats changes AND after 2 seconds of inactivity, persist the cats to the cache.
-            this.WhenAnyValue(x => x.Cats)
+            this.WhenAnyValue(vm => vm.Cats)
                 .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
                 .Subscribe(cats => PersistCatsToCache(cats));
+
+            // when the amount of cats drop below a safe level, automatically add more cats to the cache.
+            this.WhenAnyValue(vm => vm.Cats)
+                .Subscribe(cats =>
+                {
+                    if (cats.Count > 25)
+                    {
+                        return;
+                    }
+
+                    LogTo.Info(() => $"{Cats.Count} remain in the list, automatically adding more cats.");
+                    AddMoreCats.InvokeCommand(null);
+                });
         }
 
         public ReactiveCommand<IList<Cat>> AddMoreCats { get; }
@@ -126,20 +136,6 @@ namespace EndlessCatsApp.ViewModels
         public Cat SelectedCat { get; set; }
 
         [LogToErrorOnException]
-        private void ClearAndAddCats(IList<Cat> cats)
-        {
-            // ReSharper disable PossibleMultipleEnumeration
-            Ensure.ArgumentNotNull(cats, nameof(cats));
-
-            using (Cats.SuppressChangeNotifications())
-            {
-                Cats.Clear();
-                AddCats(cats);
-            }
-            // ReSharper restore PossibleMultipleEnumeration
-        }
-
-        [LogToErrorOnException]
         private void AddCats(IList<Cat> cats)
         {
             Ensure.ArgumentNotNull(cats, nameof(cats));
@@ -149,25 +145,16 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private IObservable<Cat> RemoveCat(Cat cat)
+        private void ClearAndAddCats(IList<Cat> cats)
         {
-            Ensure.ArgumentNotNull(cat, nameof(cat));
+            Ensure.ArgumentNotNull(cats, nameof(cats));
 
-            var catToRemove = Cats.SingleOrDefault(x => x.Identifier == cat.Identifier);
-            if (catToRemove != null)
+            using (Cats.SuppressChangeNotifications())
             {
-                Cats.Remove(catToRemove);
-                LogTo.Info(() => $"{cat.Identifier} has been removed from the list.");
-
+                Cats.Clear();
+                AddCats(cats);
             }
-            else
-            {
-                LogTo.Error(() => $"{cat.Identifier} was requested to be removed from the list but does not exist within the list.");
-            }
-
-            return Observable.Return(cat);
         }
-
         [LogToErrorOnException]
         private IObservable<IList<Cat>> ExpireCacheAndGetCats()
         {
@@ -191,19 +178,6 @@ namespace EndlessCatsApp.ViewModels
         }
 
         [LogToErrorOnException]
-        private void PersistCatsToCache(IList<Cat> cats)
-        {
-            // ReSharper disable PossibleMultipleEnumeration
-
-            Ensure.ArgumentNotNull(cats, nameof(cats));
-
-            _stateService.Set(CatsCacheKey, cats, TimeSpan.FromDays(365));
-            LogTo.Info(() => $"{cats.Count} cats were persisted to the cache.");
-
-            // ReSharper restore PossibleMultipleEnumeration
-        }
-
-        [LogToErrorOnException]
         private IObservable<IList<Cat>> GetCatsFromCacheOrApi()
         {
             return _stateService.Get<IList<Cat>>(CatsCacheKey)
@@ -222,6 +196,36 @@ namespace EndlessCatsApp.ViewModels
 
                     return Observable.Return(new List<Cat>());
                 });
+        }
+
+        [LogToErrorOnException]
+        private void PersistCatsToCache(IList<Cat> cats)
+        {
+            Ensure.ArgumentNotNull(cats, nameof(cats));
+
+            _stateService.Set(CatsCacheKey, cats, TimeSpan.FromDays(365));
+            LogTo.Info(() => $"{cats.Count} cats were persisted to the cache.");
+        }
+
+        [LogToErrorOnException]
+        private IObservable<Cat> RemoveCat(Cat cat)
+        {
+            Ensure.ArgumentNotNull(cat, nameof(cat));
+
+            var catToRemove = Cats.SingleOrDefault(x => x.Identifier == cat.Identifier);
+            if (catToRemove != null)
+            {
+                Cats.Remove(catToRemove);
+                LogTo.Info(() => $"{cat.Identifier} has been removed from the list.");
+            }
+            else
+            {
+                LogTo.Error(
+                    () =>
+                        $"{cat.Identifier} was requested to be removed from the list but does not exist within the list.");
+            }
+
+            return Observable.Return(cat);
         }
     }
 }
