@@ -155,6 +155,7 @@ namespace EndlessCatsApp.ViewModels
                 AddCats(cats);
             }
         }
+
         [LogToErrorOnException]
         private IObservable<IList<Cat>> ExpireCacheAndGetCats()
         {

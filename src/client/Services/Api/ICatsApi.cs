@@ -10,6 +10,9 @@ namespace EndlessCatsApp.Services.Api
         [Get("/cats?format=json")]
         IObservable<GetCatsResponse> GetCats();
 
+        [Get("/cats?format=json")]
+        Task<GetCatsResponse> GetCatsTwo();
+
         [Put("/favourite/{identifier}/add")]
         IObservable<Unit> AddFavourite(string identifier);
 
