@@ -21,9 +21,7 @@ namespace EndlessCatsApp
             InitializeAkavache();
         }
 
-        private void RegisterViews(IMutableDependencyResolver splatLocator)
-        {
-        }
+        protected abstract void RegisterViews(IMutableDependencyResolver splatLocator);
 
         private void RegisterScreen(IMutableDependencyResolver splatLocator, CompositionRoot compositionRoot)
         {

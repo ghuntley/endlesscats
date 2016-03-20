@@ -19,6 +19,11 @@ namespace EndlessCatsApp.iOS.Views
         // width of the draggable card
         private readonly nfloat _cardWidth;
 
+        public RateCatsView()
+        {
+
+        }
+
         public RateCatsView(CGRect frame) : base(frame)
         {
 
