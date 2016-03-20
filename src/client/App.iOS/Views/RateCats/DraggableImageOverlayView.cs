@@ -10,12 +10,6 @@ using EndlessCatsApp.Utility;
 
 namespace EndlessCatsApp.iOS.Views
 {
-    public enum SwipeDirection
-    {
-        Left,
-        Right
-    }
-
     public class DraggableImageOverlayView : UIView
     {
         private UIImageView _imageView;

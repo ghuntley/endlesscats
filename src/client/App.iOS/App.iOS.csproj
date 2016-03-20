@@ -94,13 +94,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="packages.config" />
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
-    <Compile Include="Views\RateCatsViewController.cs" />
     <None Include="FodyWeavers.xml" />
-    <Compile Include="Views\RateCatsView.cs" />
-    <Compile Include="Views\DraggableImageView.cs" />
-    <Compile Include="Views\DraggableImageOverlayView.cs" />
     <Compile Include="iOSCompositionRoot.cs" />
     <Compile Include="iOSSplatRegistrar.cs" />
+    <Compile Include="Views\RateCats\DraggableImageOverlayView.cs" />
+    <Compile Include="Views\RateCats\DraggableImageView.cs" />
+    <Compile Include="Views\RateCats\RateCatsView.cs" />
+    <Compile Include="Views\RateCats\RateCatsViewController.cs" />
+    <Compile Include="Views\RateCats\SwipeDirection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -191,6 +192,7 @@
     <Folder Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\" />
     <Folder Include="Resources\Images.xcassets\LikeCatOverlay.imageset\" />
     <Folder Include="Resources\Images.xcassets\LaunchScreenImage.imageset\" />
+    <Folder Include="Views\RateCats\" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
