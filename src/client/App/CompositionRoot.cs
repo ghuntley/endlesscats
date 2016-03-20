@@ -30,10 +30,6 @@ namespace EndlessCatsApp
         protected CompositionRoot()
         {
             // services
-
-            BlobCache.ApplicationName = "EndlessCatsApp";
-            BlobCache.EnsureInitialized();
-
             _blobCache = new Lazy<IBlobCache>(CreateBlobCache);
             _loggingService = new Lazy<ILogger>(CreateLoggingService);
             _stateService = new Lazy<IStateService>(CreateStateService);

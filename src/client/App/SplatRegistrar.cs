@@ -1,4 +1,5 @@
 ﻿using System;
+using Akavache;
 using EndlessCatsApp.Utility;
 using Splat;
 
@@ -17,8 +18,8 @@ namespace EndlessCatsApp
             RegisterScreen(splatLocator, compositionRoot);
             RegisterCommandBinders(splatLocator, compositionRoot);
             RegisterPlatformComponents(splatLocator, compositionRoot);
+            InitializeAkavache();
         }
-
 
         private void RegisterViews(IMutableDependencyResolver splatLocator)
         {
@@ -34,8 +35,13 @@ namespace EndlessCatsApp
 
         }
 
-
         protected abstract void RegisterPlatformComponents(IMutableDependencyResolver splatLocator, CompositionRoot compositionRoot);
+
+        private void InitializeAkavache()
+        {
+            BlobCache.ApplicationName = "EndlessCatsApp";
+            BlobCache.EnsureInitialized();
+        }
     }
 }
 
