@@ -25,14 +25,19 @@ namespace EndlessCatsApp.iOS.Views
     {
         // distance from center where the aciton applies. Higher = swipe further before the action will be called.
         private readonly nint ActionMargin = 120;
+
         // how quicikly the card shirnks. Higher = shrinks less.
         private readonly nint ScaleStrength = 4;
+
         // upper bar for how much the card shrinks. Higher = shrinks less.
         private readonly nfloat ScaleMax = 0.93f;
+
         // the maximum rotation allowed in radians. Higher = card can keep rotation longer.
         private readonly nint RotationMax = 1;
+
         // the strength of rotation. Higher = weaker rotation.
         private readonly nint RotationStrength = 320;
+
         // Higher = stronger rotation angle.
         private readonly nfloat RotationAngle = 3.14159f * 8;
 
@@ -48,23 +53,23 @@ namespace EndlessCatsApp.iOS.Views
         public DraggableImageView(CGRect frame) : base(frame)
         {
 
-            this.BackgroundColor = UIColor.White;
-            this.Layer.CornerRadius = 4;
-            this.Layer.ShadowRadius = 4;
-            this.Layer.ShadowOpacity = 0.2f;
-            this.Layer.ShadowOffset = new CGSize(1, 1);
 
             _panGestureRecognizer = new UIPanGestureRecognizer();
             _panGestureRecognizer.AddTarget(() => HandleCardDrag(_panGestureRecognizer));
             this.AddGestureRecognizer(_panGestureRecognizer);
 
             _imageView = new UIImageView(this.Bounds);
-            _imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+            _imageView.ContentMode = UIViewContentMode.ScaleAspectFill;
             _imageView.Image = UIImage.FromBundle("CatDownloadingPlaceholder");
+            _imageView.Layer.CornerRadius = 8;
+            _imageView.Layer.ShadowRadius = 8;
+            _imageView.Layer.ShadowOpacity = 0.2f;
+            _imageView.Layer.ShadowOffset = new CGSize(1, 1);
+            _imageView.ClipsToBounds = true;
 
             this.AddSubview(_imageView);
 
-            var overlayViewRect = new CGRect(Frame.Size.Width / 2 - 100, 0, 100, 100);
+            var overlayViewRect = new CGRect(Bounds.Size.Width / 2 - 100, 0, 100, 100);
             _overlayView = new DraggableImageOverlayView(overlayViewRect);
             this.AddSubview(_overlayView);
 
