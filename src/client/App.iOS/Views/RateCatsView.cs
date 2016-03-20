@@ -14,13 +14,17 @@ namespace EndlessCatsApp.iOS.Views
         private const int MaxBufferSize = 2;
 
         // height of the draggable card
-        private readonly nfloat CardHeight = 386;
+        private readonly nfloat _cardHeight;
 
         // width of the draggable card
-        private readonly nfloat CardWidth = 290;
+        private readonly nfloat _cardWidth;
 
         public RateCatsView(CGRect frame) : base(frame)
         {
+
+            _cardWidth = Frame.Size.Height / 2;
+            _cardHeight = (nfloat)(Frame.Size.Height / 1.1);
+
             this.BackgroundColor = UIColor.White;
 
             var cat = new Cat() { Identifier = "134", Url = new Uri("http://28.media.tumblr.com/Jjkybd3nSnisiguqJuNKixjxo1_500.jpg"), SourceUrl = new Uri("http://thecatapi.com/?id=2ad") };
@@ -36,9 +40,9 @@ namespace EndlessCatsApp.iOS.Views
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
-            var x = (this.Frame.Size.Width - CardWidth) / 2;
-            var y = (this.Frame.Size.Height - CardHeight) / 2;
-            var frame = new CGRect(x, y, CardWidth, CardHeight);
+            var x = (this.Frame.Size.Width - _cardWidth) / 2;
+            var y = (this.Frame.Size.Height - _cardHeight) / 2;
+            var frame = new CGRect(x, y, _cardWidth, _cardHeight);
 
             var draggableImageView = new DraggableImageView(frame);
             draggableImageView.ImageUrl = uri;
