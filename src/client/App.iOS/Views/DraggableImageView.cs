@@ -16,6 +16,8 @@ namespace EndlessCatsApp.iOS.Views
 
         EventHandler OnSwipedToTheRight { get; set; }
 
+        Uri ImageUrl { get; set; }
+
     }
 
     [Register("DraggableImageView")]
@@ -37,16 +39,14 @@ namespace EndlessCatsApp.iOS.Views
         private readonly DraggableImageOverlayView _overlayView;
         private readonly UIImageView _imageView;
         private readonly UIPanGestureRecognizer _panGestureRecognizer;
-        private readonly Uri _url;
+        private Uri _imageUrl;
 
         private CGPoint _originalPoint;
         private nfloat _xFromCenter;
         private nfloat _yFromCenter;
 
-        public DraggableImageView(Uri url, CGRect frame) : base(frame)
+        public DraggableImageView(CGRect frame) : base(frame)
         {
-            Ensure.ArgumentNotNull(url, nameof(url));
-            _url = url;
 
             this.BackgroundColor = UIColor.White;
             this.Layer.CornerRadius = 4;
@@ -58,11 +58,41 @@ namespace EndlessCatsApp.iOS.Views
             _panGestureRecognizer.AddTarget(() => HandleCardDrag(_panGestureRecognizer));
             this.AddGestureRecognizer(_panGestureRecognizer);
 
-            _imageView = new UIImageView(this.Bounds);
+            _imageView = new UIImageView(this.Frame);
             _imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+            _imageView.Image = UIImage.FromBundle("CatDownloadingPlaceholder");
 
+            this.AddSubview(_imageView);
+
+            var overlayViewRect = new CGRect(Frame.Size.Width / 2 - 100, 0, 100, 100);
+            _overlayView = new DraggableImageOverlayView(overlayViewRect);
+            this.AddSubview(_overlayView);
+
+        }
+
+
+        public EventHandler OnSwipedToTheLeft { get; set; }
+
+        public EventHandler OnSwipedToTheRight { get; set; }
+
+        public Uri ImageUrl
+        {
+            get
+            {
+                return _imageUrl;
+            }
+
+            set
+            {
+                _imageUrl = value;
+                LoadImage();
+            }
+        }
+
+        private void LoadImage()
+        {
             _imageView.SetImage(
-                url: _url,
+                url: _imageUrl,
                 placeholder: UIImage.FromBundle("CatDownloadingPlaceholder"),
                 completedBlock: (UIImage image, NSError error, SDImageCacheType cacheType, NSUrl imageUrl) =>
                 {
@@ -84,23 +114,8 @@ namespace EndlessCatsApp.iOS.Views
                             LogTo.Debug(() => $"Image was successfully loaded from the network: '{imageUrl}'");
                             break;
                     }
-
-                    _imageView.Image = image;
-
                 });
-
-            this.AddSubview(_imageView);
-
-            var overlayViewRect = new CGRect(Frame.Size.Width / 2 - 100, 0, 100, 100);
-            _overlayView = new DraggableImageOverlayView(overlayViewRect);
-            this.AddSubview(_overlayView);
-
         }
-
-
-        public EventHandler OnSwipedToTheLeft { get; set; }
-
-        public EventHandler OnSwipedToTheRight { get; set; }
 
         /// <summary>
         /// called when the card is let go.
@@ -253,7 +268,7 @@ namespace EndlessCatsApp.iOS.Views
             LogTo.Info(() => "View was swiped to the left.");
             if (OnSwipedToTheLeft != null)
             {
-                OnSwipedToTheLeft.Invoke(_url, null);
+                OnSwipedToTheLeft.Invoke(_imageUrl, null);
             }
             RemoveCardFromView(SwipeDirection.Left);
         }
@@ -266,7 +281,7 @@ namespace EndlessCatsApp.iOS.Views
             LogTo.Info(() => "View was swiped to the right.");
             if (OnSwipedToTheRight != null)
             {
-                OnSwipedToTheRight.Invoke(_url, null);
+                OnSwipedToTheRight.Invoke(_imageUrl, null);
             }
             RemoveCardFromView(SwipeDirection.Right);
         }
