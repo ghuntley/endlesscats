@@ -21,10 +21,7 @@ namespace EndlessCatsApp.iOS.Views
 
         public RateCatsView(CGRect frame) : base(frame)
         {
-
-            this.LayoutSubviews();
-
-            this.BackgroundColor = UIColor.Yellow;
+            this.BackgroundColor = UIColor.White;
 
             var cat = new Cat() { Identifier = "134", Url = new Uri("http://28.media.tumblr.com/Jjkybd3nSnisiguqJuNKixjxo1_500.jpg"), SourceUrl = new Uri("http://thecatapi.com/?id=2ad") };
 

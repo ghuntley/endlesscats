@@ -41,6 +41,7 @@ namespace EndlessCatsApp.iOS.Views
                 return;
             }
 
+            _swipeDirection = swipeDirection;
             switch (swipeDirection)
             {
                 case SwipeDirection.Left:

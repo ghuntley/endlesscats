@@ -101,9 +101,6 @@
     <Compile Include="Views\DraggableImageOverlayView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -187,6 +184,7 @@
     <Folder Include="Resources\Images.xcassets\CatDownloadingPlaceholder.imageset\" />
     <Folder Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\" />
     <Folder Include="Resources\Images.xcassets\LikeCatOverlay.imageset\" />
+    <Folder Include="Resources\Images.xcassets\LaunchScreenImage.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
@@ -197,11 +195,26 @@
     <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01.png" />
     <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01-1.png" />
     <ImageAsset Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\noButton-01.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-40%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-40%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\iTunesArtwork.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\iTunesArtwork%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <XamarinComponentReference Include="sdwebimage">
       <Version>3.7.5</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ITunesArtwork Include="iTunesArtwork" />
+    <ITunesArtwork Include="iTunesArtwork%402x" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
 </Project>
