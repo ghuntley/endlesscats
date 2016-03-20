@@ -13,6 +13,7 @@ namespace EndlessCatsApp
         public void Register(IMutableDependencyResolver splatLocator, CompositionRoot compositionRoot)
         {
             Ensure.ArgumentNotNull(splatLocator, nameof(splatLocator));
+            Ensure.ArgumentNotNull(compositionRoot, nameof(compositionRoot));
 
             RegisterViews(splatLocator);
             RegisterScreen(splatLocator, compositionRoot);

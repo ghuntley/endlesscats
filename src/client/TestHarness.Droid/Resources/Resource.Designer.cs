@@ -48,8 +48,6 @@ namespace EndlessCatsApp.TestHarness.Droid
 			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::EndlessCatsApp.TestHarness.Droid.Resource.Layout.results;
 			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::EndlessCatsApp.TestHarness.Droid.Resource.Layout.test_result;
 			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::EndlessCatsApp.TestHarness.Droid.Resource.Layout.test_suite;
-			global::EndlessCatsApp.UnitTests.Droid.Resource.String.ApplicationName = global::EndlessCatsApp.TestHarness.Droid.Resource.String.ApplicationName;
-			global::EndlessCatsApp.UnitTests.Droid.Resource.String.Hello = global::EndlessCatsApp.TestHarness.Droid.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
