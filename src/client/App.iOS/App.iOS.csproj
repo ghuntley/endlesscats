@@ -24,6 +24,7 @@
     <MtouchDebug>true</MtouchDebug>
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchFastDev>true</MtouchFastDev>
+    <MtouchExtraArgs>-gcc_flags "-force_load /Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework/Versions/A/Reveal -ObjC -framework QuartzCore -framework CFNetwork"</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -48,8 +49,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
-    <IpaPackageName>
-    </IpaPackageName>
+    <IpaPackageName></IpaPackageName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -95,15 +95,13 @@
     <None Include="packages.config" />
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="Views\RateCatsViewController.cs" />
-    <Compile Include="Views\RateCatsViewController.designer.cs">
-      <DependentUpon>RateCatsViewController.cs</DependentUpon>
-    </Compile>
     <None Include="FodyWeavers.xml" />
-    <Compile Include="Views\DraggableView.cs" />
+    <Compile Include="Views\RateCatsView.cs" />
+    <Compile Include="Views\DraggableImageView.cs" />
+    <Compile Include="Views\DraggableImageOverlayView.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
-    <InterfaceDefinition Include="Views\RateCatsViewController.xib" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -144,6 +142,12 @@
     <Reference Include="Anotar.Splat">
       <HintPath>..\..\packages\Anotar.Splat.Fody.3.0.0\Lib\Anotar.Splat.dll</HintPath>
     </Reference>
+    <Reference Include="SDWebImage">
+      <HintPath>..\..\packages\Xamarin.SDWebImage.3.7.5\lib\Xamarin.iOS\SDWebImage.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Events">
+      <HintPath>..\..\packages\reactiveui-events.6.5.0\lib\Xamarin.iOS10\ReactiveUI.Events.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Entitlements.plist" />
@@ -180,5 +184,24 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\" />
+    <Folder Include="Resources\Images.xcassets\CatDownloadingPlaceholder.imageset\" />
+    <Folder Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\" />
+    <Folder Include="Resources\Images.xcassets\LikeCatOverlay.imageset\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\CatDownloadingPlaceholder.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01-1.png" />
+    <ImageAsset Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\noButton-01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="sdwebimage">
+      <Version>3.7.5</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ using Anotar.Splat;
 using EndlessCatsApp.Services.Api;
 using EndlessCatsApp.Utility;
 
-namespace EndlessCatsApp.iOS.View
+namespace EndlessCatsApp.iOS.Views
 {
     public interface IDraggableView
     {
@@ -18,13 +18,13 @@ namespace EndlessCatsApp.iOS.View
 
     }
 
-    [Register("DraggableView")]
-    public sealed class DraggableView : UIView, IDraggableView
+    [Register("DraggableImageView")]
+    public sealed class DraggableImageView : UIView, IDraggableView
     {
         // distance from center where the aciton applies. Higher = swipe further before the action will be called.
         private readonly nint ActionMargin = 120;
         // how quicikly the card shirnks. Higher = shrinks less.
-        private readonly nint ScaleStrenth = 4;
+        private readonly nint ScaleStrength = 4;
         // upper bar for how much the card shrinks. Higher = shrinks less.
         private readonly nfloat ScaleMax = 0.93f;
         // the maximum rotation allowed in radians. Higher = card can keep rotation longer.
@@ -34,6 +34,7 @@ namespace EndlessCatsApp.iOS.View
         // Higher = stronger rotation angle.
         private readonly nfloat RotationAngle = 3.14159f * 8;
 
+        private readonly DraggableImageOverlayView _overlayView;
         private readonly UIImageView _imageView;
         private readonly UIPanGestureRecognizer _panGestureRecognizer;
         private readonly Uri _url;
@@ -42,19 +43,26 @@ namespace EndlessCatsApp.iOS.View
         private nfloat _xFromCenter;
         private nfloat _yFromCenter;
 
-
-        public DraggableView(Uri url)
+        public DraggableImageView(Uri url, CGRect frame) : base(frame)
         {
             Ensure.ArgumentNotNull(url, nameof(url));
             _url = url;
+
+            this.BackgroundColor = UIColor.White;
+            this.Layer.CornerRadius = 4;
+            this.Layer.ShadowRadius = 4;
+            this.Layer.ShadowOpacity = 0.2f;
+            this.Layer.ShadowOffset = new CGSize(1, 1);
 
             _panGestureRecognizer = new UIPanGestureRecognizer();
             _panGestureRecognizer.AddTarget(() => HandleCardDrag(_panGestureRecognizer));
             this.AddGestureRecognizer(_panGestureRecognizer);
 
-            _imageView = new UIImageView(this.Frame);
+            _imageView = new UIImageView(this.Bounds);
             _imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-            _imageView.SetImage(url: _url, 
+
+            _imageView.SetImage(
+                url: _url,
                 placeholder: UIImage.FromBundle("CatDownloadingPlaceholder"),
                 completedBlock: (UIImage image, NSError error, SDImageCacheType cacheType, NSUrl imageUrl) =>
                 {
@@ -77,19 +85,16 @@ namespace EndlessCatsApp.iOS.View
                             break;
                     }
 
+                    _imageView.Image = image;
+
                 });
 
             this.AddSubview(_imageView);
 
+            var overlayViewRect = new CGRect(Frame.Size.Width / 2 - 100, 0, 100, 100);
+            _overlayView = new DraggableImageOverlayView(overlayViewRect);
+            this.AddSubview(_overlayView);
 
-            //this.Opaque = true;
-            // TODO: make this opqaue, and not red.
-            //this.ClearsContextBeforeDrawing = false;
-            //this.BackgroundColor = UIColor.Red;
-            this.Layer.CornerRadius = 4;
-            this.Layer.ShadowRadius = 4;
-            this.Layer.ShadowOpacity = 0.2f;
-            this.Layer.ShadowOffset = new CGSize(1, 1);
         }
 
 
@@ -110,30 +115,29 @@ namespace EndlessCatsApp.iOS.View
             {
                 CardWasSwipedToTheLeft();
             }
-            else
-            {
+            else {
                 // reset the card
                 UIView.Animate(duration: 0.3, animation: new Action(() =>
-                        {
-                            this.Center = _originalPoint;
-                            this.Transform = CGAffineTransform.MakeRotation(0);
-                        }));
+                {
+                    this.Center = _originalPoint;
+                    this.Transform = CGAffineTransform.MakeRotation(0);
+                    _overlayView.Alpha = 0;
+                }));
             }
-            
+
         }
 
         private void UpdateOverlay(nfloat distance)
         {
             if (distance > 0)
             {
-                // Right    
+                _overlayView.SetSwipeDirection(SwipeDirection.Right);
             }
-            else
-            {
-                // Left
+            else {
+                _overlayView.SetSwipeDirection(SwipeDirection.Left);
             }
 
-            // overlayView.Alpha = Math.Min(Math.Abs(distance)/100, 0.4);
+            _overlayView.Alpha = (nfloat)Math.Min(Math.Abs(distance) / 100, 0.4);
         }
 
 
@@ -155,15 +159,15 @@ namespace EndlessCatsApp.iOS.View
 
                 case UIGestureRecognizerState.Changed:
                     LogTo.Debug(() => $"View is being dragged: x={_xFromCenter} y={_yFromCenter}");
-                    
+
                     // dictates rotation
-                    double strength = Math.Min(_xFromCenter / RotationStrength, RotationMax);
+                    double rotationStrength = Math.Min(_xFromCenter / RotationStrength, RotationMax);
 
                     // degree in radians
-                    nfloat angle = (nfloat)(RotationAngle * strength);
+                    nfloat angle = (nfloat)(RotationAngle * rotationStrength);
 
                     // amount the height changes when you move the card up to a certain point
-                    nfloat scale = (nfloat)Math.Max(1 - Math.Abs(strength) / strength, ScaleMax);
+                    nfloat scale = (nfloat)Math.Max(1 - Math.Abs(rotationStrength) / ScaleStrength, ScaleMax);
 
                     // move the object's center by center + gesture coordinate
                     nfloat x = _originalPoint.X + _xFromCenter;
@@ -193,7 +197,7 @@ namespace EndlessCatsApp.iOS.View
                 case UIGestureRecognizerState.Possible:
                     LogTo.Debug(() => $"View drag is possible: x={_xFromCenter} y={_yFromCenter}");
                     break;
-    
+
                 case UIGestureRecognizerState.Cancelled:
                     LogTo.Debug(() => $"View drag has been cancelled: x={_xFromCenter} y={_yFromCenter}");
                     break;
@@ -204,16 +208,41 @@ namespace EndlessCatsApp.iOS.View
             }
         }
 
-        private void RemoveCardFromView()
+        private void RemoveCardFromView(SwipeDirection swipeDirection)
         {
-            CGPoint finishPoint = new CGPoint(500, 2 * _yFromCenter + _originalPoint.Y);
+            CGPoint finishPoint;
+            nfloat rotation;
+
+            if (swipeDirection == SwipeDirection.Left)
+            {
+                finishPoint = new CGPoint(-600, this.Center.Y);
+                rotation = -1;
+
+            }
+            else if (swipeDirection == SwipeDirection.Right)
+            {
+
+                finishPoint = new CGPoint(600, this.Center.Y);
+                rotation = 1;
+
+            }
+            else
+            {
+                LogTo.Fatal(() => "Unknown swipe direction, view will not be animated.");
+                finishPoint = new CGPoint(this.Center.Y, this.Center.Y);
+                rotation = 0;
+            }
+
             UIView.Animate(duration: 0.3, animation: new Action(() =>
-                    {
-                        this.Center = finishPoint;
-                    }), completion: new Action(() =>
-                    {
-                        this.RemoveFromSuperview();
-                    }));
+            {
+                this.Center = finishPoint;
+                this.Transform = CGAffineTransform.MakeRotation(rotation);
+            }), completion: new Action(() =>
+            {
+                this.RemoveFromSuperview();
+
+                LogTo.Debug(() => "View has been removed from the superview.");
+            }));
         }
 
         /// <summary>
@@ -221,11 +250,12 @@ namespace EndlessCatsApp.iOS.View
         /// </summary>
         public void CardWasSwipedToTheLeft()
         {
+            LogTo.Info(() => "View was swiped to the left.");
             if (OnSwipedToTheLeft != null)
             {
                 OnSwipedToTheLeft.Invoke(_url, null);
             }
-            RemoveCardFromView();
+            RemoveCardFromView(SwipeDirection.Left);
         }
 
         /// <summary>
@@ -233,11 +263,12 @@ namespace EndlessCatsApp.iOS.View
         /// </summary>
         public void CardWasSwipedToTheRight()
         {
+            LogTo.Info(() => "View was swiped to the right.");
             if (OnSwipedToTheRight != null)
             {
                 OnSwipedToTheRight.Invoke(_url, null);
             }
-            RemoveCardFromView();
+            RemoveCardFromView(SwipeDirection.Right);
         }
     }
 }

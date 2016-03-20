@@ -11,11 +11,12 @@ using EndlessCatsApp.Services.Connected.Rating;
 using EndlessCatsApp.Services.Connected.State;
 using System.Diagnostics;
 using EndlessCatsApp.iOS;
+using EndlessCatsApp.iOS.Views;
 
 namespace App.iOS
 {
-    // The UIApplicationDelegate for the application. This class is responsible for launching the 
-    // User Interface of the application, as well as listening (and optionally responding) to 
+    // The UIApplicationDelegate for the application. This class is responsible for launching the
+    // User Interface of the application, as well as listening (and optionally responding) to
     // application events from iOS.
     [Register("AppDelegate")]
     public class AppDelegate : UIApplicationDelegate
@@ -40,7 +41,7 @@ namespace App.iOS
             Window = new UIWindow(UIScreen.MainScreen.Bounds);
 
             var controller = new RateCatsViewController();
-            controller.View.BackgroundColor = UIColor.Red;
+
 
             Window.RootViewController = controller;
 
@@ -80,14 +81,14 @@ namespace App.iOS
         {
             // Called when the application is about to terminate. Save data, if needed. See also DidEnterBackground.
         }
- 
+
         public void InitializeAkavache()
         {
             BlobCache.ApplicationName = "EndlessCatsApp";
             BlobCache.EnsureInitialized();
 
-            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.UserAccount, typeof (IBlobCache));
-            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.Secure, typeof (ISecureBlobCache));
+            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.UserAccount, typeof(IBlobCache));
+            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.Secure, typeof(ISecureBlobCache));
         }
 
         public void ConfigureLogging()
@@ -101,8 +102,8 @@ namespace App.iOS
 
         public void RegisterServices()
         {
-            Locator.CurrentMutable.RegisterLazySingleton(() => new StateService(Locator.Current.GetService<IBlobCache>()), typeof (IStateService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new CatsApiService(), typeof (ICatsApiService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new StateService(Locator.Current.GetService<IBlobCache>()), typeof(IStateService));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new CatsApiService(), typeof(ICatsApiService));
             Locator.CurrentMutable.RegisterLazySingleton(() => new RatingService(Locator.Current.GetService<ICatsApiService>()), typeof(IRatingService));
         }
     }
