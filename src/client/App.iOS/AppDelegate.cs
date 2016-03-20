@@ -33,14 +33,15 @@ namespace App.iOS
         {
             // Override point for customization after application launch.
             // If not required for your application you can safely delete this method
-            ConfigureLogging();
-            InitializeAkavache();
-            RegisterServices();
+
+            var compositionRoot = new iOSCompositionRoot();
+            var splatRegistrar = new iOSSplatRegistrar();
+            splatRegistrar.Register(Locator.CurrentMutable, compositionRoot);
 
             // create a new window instance based on the screen size
             Window = new UIWindow(UIScreen.MainScreen.Bounds);
 
-            var controller = new RateCatsViewController();
+            var controller = new RateCatsViewController(compositionRoot);
 
 
             Window.RootViewController = controller;
@@ -80,31 +81,6 @@ namespace App.iOS
         public override void WillTerminate(UIApplication application)
         {
             // Called when the application is about to terminate. Save data, if needed. See also DidEnterBackground.
-        }
-
-        public void InitializeAkavache()
-        {
-            BlobCache.ApplicationName = "EndlessCatsApp";
-            BlobCache.EnsureInitialized();
-
-            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.UserAccount, typeof(IBlobCache));
-            Locator.CurrentMutable.RegisterLazySingleton(() => BlobCache.Secure, typeof(ISecureBlobCache));
-        }
-
-        public void ConfigureLogging()
-        {
-            if (Debugger.IsAttached)
-            {
-                var logger = new LoggingService { Level = LogLevel.Debug };
-                Locator.CurrentMutable.RegisterConstant(logger, typeof(ILogger));
-            }
-        }
-
-        public void RegisterServices()
-        {
-            Locator.CurrentMutable.RegisterLazySingleton(() => new StateService(Locator.Current.GetService<IBlobCache>()), typeof(IStateService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new CatsApiService(), typeof(ICatsApiService));
-            Locator.CurrentMutable.RegisterLazySingleton(() => new RatingService(Locator.Current.GetService<ICatsApiService>()), typeof(IRatingService));
         }
     }
 }

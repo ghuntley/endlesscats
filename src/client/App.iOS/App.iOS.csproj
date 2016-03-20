@@ -99,6 +99,8 @@
     <Compile Include="Views\RateCatsView.cs" />
     <Compile Include="Views\DraggableImageView.cs" />
     <Compile Include="Views\DraggableImageOverlayView.cs" />
+    <Compile Include="iOSCompositionRoot.cs" />
+    <Compile Include="iOSSplatRegistrar.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -177,6 +179,10 @@
     <ProjectReference Include="..\ViewModels\ViewModels.csproj">
       <Project>{428115CF-9929-4328-B680-445C52244095}</Project>
       <Name>ViewModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\App\App.csproj">
+      <Project>{90F211E4-461F-4FDC-A8A0-77D404FA4AF3}</Project>
+      <Name>App</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

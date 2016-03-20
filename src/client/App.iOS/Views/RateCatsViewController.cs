@@ -24,9 +24,11 @@ namespace EndlessCatsApp.iOS.Views
 
         public RateCatsViewModel ViewModel { get; set; }
 
-        public RateCatsViewController()
+        public RateCatsViewController(CompositionRoot compositionRoot)
         {
-            ViewModel = new RateCatsViewModel(Locator.Current.GetService<ICatsApiService>(), Locator.Current.GetService<IStateService>(), Locator.Current.GetService<IRatingService>());
+            ViewModel = compositionRoot.ResolveRateCatsViewModel();
+            //           ViewModel = 
+            //new RateCatsViewModel(Locator.Current.GetService<ICatsApiService>(), Locator.Current.GetService<IStateService>(), Locator.Current.GetService<IRatingService>());
 
 
             this.WhenActivated(d =>
@@ -43,10 +45,6 @@ namespace EndlessCatsApp.iOS.Views
 
             _rateCatsView = new RateCatsView(View.Frame);
             this.View.AddSubview(_rateCatsView);
-
-            ICatsApiService service = Locator.Current.GetService<ICatsApiService>();
-
-            var data = await service.Background.GetCatsTwo();
         }
 
         public override void DidReceiveMemoryWarning()
