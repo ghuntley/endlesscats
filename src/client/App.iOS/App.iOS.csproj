@@ -99,6 +99,7 @@
       <DependentUpon>RateCatsViewController.cs</DependentUpon>
     </Compile>
     <None Include="FodyWeavers.xml" />
+    <Compile Include="Views\DraggableView.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
