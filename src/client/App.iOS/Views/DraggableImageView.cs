@@ -58,7 +58,7 @@ namespace EndlessCatsApp.iOS.Views
             _panGestureRecognizer.AddTarget(() => HandleCardDrag(_panGestureRecognizer));
             this.AddGestureRecognizer(_panGestureRecognizer);
 
-            _imageView = new UIImageView(this.Frame);
+            _imageView = new UIImageView(this.Bounds);
             _imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
             _imageView.Image = UIImage.FromBundle("CatDownloadingPlaceholder");
 

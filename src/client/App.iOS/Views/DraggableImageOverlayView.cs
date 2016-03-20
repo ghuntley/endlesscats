@@ -23,9 +23,7 @@ namespace EndlessCatsApp.iOS.Views
 
         public DraggableImageOverlayView(CGRect frame) : base(frame)
         {
-            this.BackgroundColor = UIColor.White;
             _imageView = new UIImageView();
-            _imageView.Image = UIImage.FromBundle("DislikeCatOverlay");
 
             this.AddSubview(_imageView);
         }

@@ -46,8 +46,21 @@ namespace EndlessCatsApp.iOS.Views
             var draggableImageView = new DraggableImageView(frame);
             draggableImageView.ImageUrl = uri;
 
+            draggableImageView.OnSwipedToTheLeft += OnSwipedToTheLeft;
+            draggableImageView.OnSwipedToTheRight += OnSwipedToTheRight;
             return draggableImageView;
         }
+
+        private void OnSwipedToTheLeft(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OnSwipedToTheRight(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }
 
