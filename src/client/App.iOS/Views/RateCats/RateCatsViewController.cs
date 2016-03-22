@@ -9,6 +9,7 @@ using EndlessCatsApp.ViewModels;
 using ReactiveUI;
 using Splat;
 using Anotar.Splat;
+using System.Reactive.Linq;
 
 namespace EndlessCatsApp.iOS.Views
 {
@@ -34,11 +35,24 @@ namespace EndlessCatsApp.iOS.Views
                 // automatically retrieve data from cache/api when the view is activated.
                 ViewModel.Refresh.Execute(null);
 
-                autoDispose(this.OneWayBind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
+                // bind the cats viewmodel property to the view viewmodel property.
+                //this.WhenAnyValue(view => view.ViewModel.Cats).Subscribe(x =>
+                //{
+                //    _rateCatsView.ViewModel = x;
+                //});
 
-                _rateCatsView.Swipes.Subscribe(x =>
+                autoDispose(this.Bind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
+
+                autoDispose(this.WhenAnyObservable(view => view._rateCatsView.Swipes).Where(direction => direction == SwipeDirection.Left).Subscribe(x =>
                 {
-                });
+                    ViewModel.DislikeCat.Execute(null);
+                }));
+                autoDispose(this.WhenAnyObservable(view => view._rateCatsView.Swipes).Where(direction => direction == SwipeDirection.Right).Subscribe(x =>
+                {
+                    ViewModel.LikeCat.Execute(null);
+                }));
+
+
             });
         }
 

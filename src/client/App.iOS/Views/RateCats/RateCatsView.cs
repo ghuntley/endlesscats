@@ -30,20 +30,49 @@ namespace EndlessCatsApp.iOS.Views
 
             this.BackgroundColor = UIColor.LightGray;
 
-            var cat = new Cat() { Identifier = "134", Url = new Uri("http://28.media.tumblr.com/Jjkybd3nSnisiguqJuNKixjxo1_500.jpg"), SourceUrl = new Uri("http://thecatapi.com/?id=2ad") };
 
-            this.AddSubview(CreateDraggableImageView(cat));
-            this.AddSubview(CreateDraggableImageView(cat));
-            this.AddSubview(CreateDraggableImageView(cat));
-            this.AddSubview(CreateDraggableImageView(cat));
-            this.AddSubview(CreateDraggableImageView(cat));
+
+            this.WhenActivated(autoDispose =>
+            {
+                this.WhenAnyObservable(y => y.ViewModel.ItemsAdded).Distinct().Subscribe(cat =>
+                   {
+                       if (this.Subviews.Length < 10)
+                       {
+
+                           var view = CreateDraggableImageView(cat);
+
+                           // insert additional cats behind the active cat
+                           if (this.Subviews.Length > 1)
+                           {
+                               this.InsertSubviewBelow(view, this.Subviews[1]);
+                           }
+                           else {
+                               this.InsertSubviewBelow(view, this);
+                           }
+                       }
+                   });
+            });
+
+            //var cat = new Cat() { Identifier = "134", Url = new Uri("http://28.media.tumblr.com/Jjkybd3nSnisiguqJuNKixjxo1_500.jpg"), SourceUrl = new Uri("http://thecatapi.com/?id=2ad") };
+
+            //this.AddSubview(CreateDraggableImageView(cat));
+            //this.AddSubview(CreateDraggableImageView(cat));
+            //this.AddSubview(CreateDraggableImageView(cat));
+            //this.AddSubview(CreateDraggableImageView(cat));
+            //this.AddSubview(CreateDraggableImageView(cat));
         }
 
         public ReactiveList<Cat> ViewModel
         {
-            get;
-            set;
+            get { return _viewModel; }
+            set
+            {
+                _viewModel = value;
+            }
         }
+
+        private ReactiveList<Cat> _viewModel;
+
 
         object IViewFor.ViewModel
         {

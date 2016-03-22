@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Anotar.Splat;
@@ -41,6 +42,8 @@ namespace EndlessCatsApp.ViewModels
             // default values
 
             Cats = new ReactiveList<Cat>();
+            //Cats.ShouldReset.Subscribe(_ => Observable.Return(true));
+
             SelectedCat = new Cat();
 
             // logic
@@ -118,10 +121,10 @@ namespace EndlessCatsApp.ViewModels
                         .Subscribe(cats =>
                         {
                             // don't automatically fetch cats when the viewmodel is loaded.
-                            if (cats.Count == 0)
-                            {
-                                return;
-                            }
+                            //if (cats.Count == 0)
+                            //{
+                            //    return;
+                            //}
 
                             // we have enough cats, no need to get more.
                             if (cats.Count > 25)
@@ -160,7 +163,13 @@ namespace EndlessCatsApp.ViewModels
         {
             Ensure.ArgumentNotNull(cats, nameof(cats));
 
-            Cats.AddRange(cats);
+            foreach (var cat in cats)
+            {
+                Cats.Add(cat);
+            }
+            //Cats.AddRange(cats);
+            //Cats.Reset();
+
             LogTo.Info(() => $"{cats.Count} cats were added to the list.");
         }
 
@@ -169,11 +178,11 @@ namespace EndlessCatsApp.ViewModels
         {
             Ensure.ArgumentNotNull(cats, nameof(cats));
 
-            using (Cats.SuppressChangeNotifications())
-            {
-                Cats.Clear();
-                AddCats(cats);
-            }
+            //using (Cats.SuppressChangeNotifications())
+            //{
+            Cats.Clear();
+            AddCats(cats);
+            //}
         }
 
         [LogToErrorOnException]
