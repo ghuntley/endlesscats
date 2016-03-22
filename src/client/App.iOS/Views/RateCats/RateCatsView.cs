@@ -6,6 +6,8 @@ using Anotar.Splat;
 using EndlessCatsApp.Utility;
 using EndlessCatsApp.Services.Api;
 using ReactiveUI;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -30,16 +32,13 @@ namespace EndlessCatsApp.iOS.Views
 
             this.BackgroundColor = UIColor.LightGray;
 
-
-
             this.WhenActivated(autoDispose =>
             {
-                this.WhenAnyObservable(y => y.ViewModel.ItemsAdded).Distinct().Subscribe(cat =>
+                this.WhenAnyObservable(x => x.ViewModel.ItemsAdded).Subscribe(x =>
                    {
                        if (this.Subviews.Length < 10)
                        {
-
-                           var view = CreateDraggableImageView(cat);
+                           var view = CreateDraggableImageView(x);
 
                            // insert additional cats behind the active cat
                            if (this.Subviews.Length > 1)
@@ -52,14 +51,6 @@ namespace EndlessCatsApp.iOS.Views
                        }
                    });
             });
-
-            //var cat = new Cat() { Identifier = "134", Url = new Uri("http://28.media.tumblr.com/Jjkybd3nSnisiguqJuNKixjxo1_500.jpg"), SourceUrl = new Uri("http://thecatapi.com/?id=2ad") };
-
-            //this.AddSubview(CreateDraggableImageView(cat));
-            //this.AddSubview(CreateDraggableImageView(cat));
-            //this.AddSubview(CreateDraggableImageView(cat));
-            //this.AddSubview(CreateDraggableImageView(cat));
-            //this.AddSubview(CreateDraggableImageView(cat));
         }
 
         public ReactiveList<Cat> ViewModel
