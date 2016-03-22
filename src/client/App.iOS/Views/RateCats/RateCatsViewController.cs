@@ -20,25 +20,25 @@ namespace EndlessCatsApp.iOS.Views
             set { ViewModel = (RateCatsViewModel)value; }
         }
 
-        private UIView _rateCatsView;
+        private RateCatsView _rateCatsView;
 
         public RateCatsViewModel ViewModel { get; set; }
 
         public RateCatsViewController(CompositionRoot compositionRoot)
         {
             ViewModel = compositionRoot.ResolveRateCatsViewModel();
-            //           ViewModel = 
-            //new RateCatsViewModel(Locator.Current.GetService<ICatsApiService>(), Locator.Current.GetService<IStateService>(), Locator.Current.GetService<IRatingService>());
 
 
-            this.WhenActivated(d =>
+            this.WhenActivated(autoDispose =>
             {
                 // automatically retrieve data from cache/api when the view is activated.
                 ViewModel.Refresh.Execute(true);
+
+                autoDispose(this.OneWayBind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
             });
         }
 
-        public override async void ViewDidLoad()
+        public override void ViewDidLoad()
         {
             base.ViewDidLoad();
             // Perform any additional setup after loading the view, typically from a nib.

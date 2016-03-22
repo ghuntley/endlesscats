@@ -7,21 +7,27 @@ using SDWebImage;
 using Anotar.Splat;
 using EndlessCatsApp.Services.Api;
 using EndlessCatsApp.Utility;
+using ReactiveUI;
 
 namespace EndlessCatsApp.iOS.Views
 {
     public interface IDraggableView
     {
-        EventHandler OnSwipedToTheLeft { get; set; }
+        EventHandler OnViewSwipedToTheLeft
+        {
+            get;
+            set;
+        }
 
-        EventHandler OnSwipedToTheRight { get; set; }
-
-        Uri ImageUrl { get; set; }
-
+        EventHandler OnViewSwipedToTheRight
+        {
+            get;
+            set;
+        }
     }
 
     [Register("DraggableImageView")]
-    public sealed class DraggableImageView : UIView, IDraggableView
+    public sealed class DraggableImageView : ReactiveView, IDraggableView, IViewFor<Cat>
     {
         // distance from center where the aciton applies. Higher = swipe further before the action will be called.
         private readonly nint ActionMargin = 120;
@@ -39,7 +45,7 @@ namespace EndlessCatsApp.iOS.Views
         private readonly nint RotationStrength = 320;
 
         // Higher = stronger rotation angle.
-        private readonly nfloat RotationAngle = 3.14159f * 8;
+        private readonly nfloat RotationAngle = 3.14159f / 8;
 
         private readonly DraggableImageOverlayView _overlayView;
         private readonly UIImageView _imageView;
@@ -50,17 +56,34 @@ namespace EndlessCatsApp.iOS.Views
         private nfloat _xFromCenter;
         private nfloat _yFromCenter;
 
+        public Cat ViewModel
+        {
+            get;
+            set;
+        }
+
+        object IViewFor.ViewModel
+        {
+            get
+            {
+                return ViewModel;
+            }
+            set
+            {
+                ViewModel = (Cat)value;
+            }
+        }
+
+
         public DraggableImageView(CGRect frame) : base(frame)
         {
-
-
             _panGestureRecognizer = new UIPanGestureRecognizer();
             _panGestureRecognizer.AddTarget(() => HandleCardDrag(_panGestureRecognizer));
             this.AddGestureRecognizer(_panGestureRecognizer);
 
             _imageView = new UIImageView(this.Bounds);
             _imageView.ContentMode = UIViewContentMode.ScaleAspectFill;
-            _imageView.Image = UIImage.FromBundle("CatDownloadingPlaceholder");
+            _imageView.Image = UIImage.FromBundle("DownloadingPlaceholder");
             _imageView.Layer.CornerRadius = 8;
             _imageView.Layer.ShadowRadius = 8;
             _imageView.Layer.ShadowOpacity = 0.2f;
@@ -73,54 +96,53 @@ namespace EndlessCatsApp.iOS.Views
             _overlayView = new DraggableImageOverlayView(overlayViewRect);
             this.AddSubview(_overlayView);
 
-        }
-
-
-        public EventHandler OnSwipedToTheLeft { get; set; }
-
-        public EventHandler OnSwipedToTheRight { get; set; }
-
-        public Uri ImageUrl
-        {
-            get
-            {
-                return _imageUrl;
-            }
-
-            set
-            {
-                _imageUrl = value;
-                LoadImage();
-            }
-        }
-
-        private void LoadImage()
-        {
-            _imageView.SetImage(
-                url: _imageUrl,
-                placeholder: UIImage.FromBundle("CatDownloadingPlaceholder"),
-                completedBlock: (UIImage image, NSError error, SDImageCacheType cacheType, NSUrl imageUrl) =>
+            this.WhenActivated(
+                autoDispose =>
                 {
-                    if (error != null)
+                    autoDispose(this.WhenAnyValue(view => view.ViewModel).Subscribe(cat =>
                     {
-                        LogTo.Error(() => $"Image failed to load: '{error}' from: '{imageUrl}'");
-                        return;
-                    }
+                        _imageView.SetImage(
+                         url: cat.Url,
+                         placeholder: UIImage.FromBundle("DownloadingPlaceholder"),
+                         completedBlock: (UIImage image, NSError error, SDImageCacheType cacheType, NSUrl imageUrl) =>
+                         {
+                             if (error != null)
+                             {
+                                 LogTo.Error(() => $"Image failed to load: '{error}' from: '{imageUrl}'");
+                                 return;
+                             }
 
-                    switch (cacheType)
-                    {
-                        case SDImageCacheType.Disk:
-                            LogTo.Debug(() => $"Image was successfully loaded from disk: '{imageUrl}'");
-                            break;
-                        case SDImageCacheType.Memory:
-                            LogTo.Debug(() => $"Image was successfully loaded from memory: '{imageUrl}'");
-                            break;
-                        case SDImageCacheType.None:
-                            LogTo.Debug(() => $"Image was successfully loaded from the network: '{imageUrl}'");
-                            break;
-                    }
+                             switch (cacheType)
+                             {
+                                 case SDImageCacheType.Disk:
+                                     LogTo.Debug(() => $"Image was successfully loaded from disk: '{imageUrl}'");
+                                     break;
+                                 case SDImageCacheType.Memory:
+                                     LogTo.Debug(() => $"Image was successfully loaded from memory: '{imageUrl}'");
+                                     break;
+                                 case SDImageCacheType.None:
+                                     LogTo.Debug(() => $"Image was successfully loaded from the network: '{imageUrl}'");
+                                     break;
+                             }
+                         });
+                    }));
                 });
         }
+
+
+        public EventHandler OnViewSwipedToTheLeft
+        {
+            get;
+            set;
+        }
+
+        public EventHandler OnViewSwipedToTheRight
+        {
+            get;
+            set;
+        }
+
+        private void LoadImage() { }
 
         /// <summary>
         /// called when the card is let go.
@@ -129,11 +151,11 @@ namespace EndlessCatsApp.iOS.Views
         {
             if (_xFromCenter > ActionMargin)
             {
-                CardWasSwipedToTheRight();
+                ViewWasSwipedToTheRight();
             }
             else if (_xFromCenter < -ActionMargin)
             {
-                CardWasSwipedToTheLeft();
+                ViewWasSwipedToTheLeft();
             }
             else {
                 // reset the card
@@ -246,8 +268,7 @@ namespace EndlessCatsApp.iOS.Views
                 rotation = 1;
 
             }
-            else
-            {
+            else {
                 LogTo.Fatal(() => "Unknown swipe direction, view will not be animated.");
                 finishPoint = new CGPoint(this.Center.Y, this.Center.Y);
                 rotation = 0;
@@ -268,12 +289,12 @@ namespace EndlessCatsApp.iOS.Views
         /// <summary>
         /// When a swipe exceeds the ActionMargin to the right
         /// </summary>
-        public void CardWasSwipedToTheLeft()
+        public void ViewWasSwipedToTheLeft()
         {
             LogTo.Info(() => "View was swiped to the left.");
-            if (OnSwipedToTheLeft != null)
+            if (OnViewSwipedToTheLeft != null)
             {
-                OnSwipedToTheLeft.Invoke(_imageUrl, null);
+                OnViewSwipedToTheLeft.Invoke(_imageUrl, null);
             }
             RemoveCardFromView(SwipeDirection.Left);
         }
@@ -281,15 +302,14 @@ namespace EndlessCatsApp.iOS.Views
         /// <summary>
         /// When a swipe exceeds the ActionMargin to the left
         /// </summary>
-        public void CardWasSwipedToTheRight()
+        public void ViewWasSwipedToTheRight()
         {
             LogTo.Info(() => "View was swiped to the right.");
-            if (OnSwipedToTheRight != null)
+            if (OnViewSwipedToTheRight != null)
             {
-                OnSwipedToTheRight.Invoke(_imageUrl, null);
+                OnViewSwipedToTheRight.Invoke(_imageUrl, null);
             }
             RemoveCardFromView(SwipeDirection.Right);
         }
     }
 }
-

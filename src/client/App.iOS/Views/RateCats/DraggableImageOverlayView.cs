@@ -7,9 +7,12 @@ using SDWebImage;
 using Anotar.Splat;
 using EndlessCatsApp.Services.Api;
 using EndlessCatsApp.Utility;
+using ReactiveUI;
 
 namespace EndlessCatsApp.iOS.Views
 {
+
+    [Register("DraggableImageViewOverlay")]
     public class DraggableImageOverlayView : UIView
     {
         private UIImageView _imageView;
@@ -39,11 +42,11 @@ namespace EndlessCatsApp.iOS.Views
             switch (swipeDirection)
             {
                 case SwipeDirection.Left:
-                    _imageView.Image = UIImage.FromBundle("DislikeCatOverlay");
-                    LogTo.Debug(() => "Overlay has been set to dislike.");
+                    _imageView.Image = UIImage.FromBundle("Nope");
+                    LogTo.Debug(() => "Overlay has been set to nope.");
                     break;
                 case SwipeDirection.Right:
-                    _imageView.Image = UIImage.FromBundle("LikeCatOverlay");
+                    _imageView.Image = UIImage.FromBundle("Liked");
                     LogTo.Debug(() => "Overlay has been set to like.");
                     break;
                 default:

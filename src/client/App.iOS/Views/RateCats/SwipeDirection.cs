@@ -12,9 +12,9 @@ namespace EndlessCatsApp.iOS.Views
 {
     public enum SwipeDirection
     {
-        Unknown,
+        None = 0,
         Left,
         Right
     }
-    
+
 }

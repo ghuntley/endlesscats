@@ -15,7 +15,6 @@ namespace EndlessCatsApp.iOS
 
         protected override void RegisterViews(IMutableDependencyResolver splatLocator)
         {
-            splatLocator.Register(() => new RateCatsView(), typeof(IViewFor<RateCatsViewModel>));
         }
     }
 }

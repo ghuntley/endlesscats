@@ -188,21 +188,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\" />
-    <Folder Include="Resources\Images.xcassets\CatDownloadingPlaceholder.imageset\" />
-    <Folder Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\" />
-    <Folder Include="Resources\Images.xcassets\LikeCatOverlay.imageset\" />
     <Folder Include="Resources\Images.xcassets\LaunchScreenImage.imageset\" />
     <Folder Include="Views\RateCats\" />
+    <Folder Include="Resources\Images.xcassets\Liked.imageset\" />
+    <Folder Include="Resources\Images.xcassets\Nope.imageset\" />
+    <Folder Include="Resources\Images.xcassets\DownloadingPlaceholder.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\CatDownloadingPlaceholder.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01.png" />
-    <ImageAsset Include="Resources\Images.xcassets\LikeCatOverlay.imageset\yesButton-01-1.png" />
-    <ImageAsset Include="Resources\Images.xcassets\DislikeCatOverlay.imageset\noButton-01.png" />
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small.png" />
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%403x.png" />
@@ -211,6 +205,14 @@
     <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\iTunesArtwork.png" />
     <ImageAsset Include="Resources\Images.xcassets\LaunchScreenImage.imageset\iTunesArtwork%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\Liked.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\Liked.imageset\liked.png" />
+    <ImageAsset Include="Resources\Images.xcassets\Liked.imageset\liked%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\Liked.imageset\yesButton-01-1.png" />
+    <ImageAsset Include="Resources\Images.xcassets\Nope.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\Nope.imageset\nope.png" />
+    <ImageAsset Include="Resources\Images.xcassets\Nope.imageset\nope%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\DownloadingPlaceholder.imageset\Contents.json" />
   </ItemGroup>
   <ItemGroup>
     <XamarinComponentReference Include="sdwebimage">

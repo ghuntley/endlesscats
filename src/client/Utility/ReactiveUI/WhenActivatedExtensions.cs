@@ -1,8 +1,8 @@
-﻿using ReactiveUI;
-using System;
+﻿using System;
 using System.Reactive.Disposables;
+using EndlessCatsApp.Utility;
 
-namespace EndlessCatsApp.Utility.ReactiveUI
+namespace ReactiveUI
 {
     public static class WhenActivatedExtensions
     {
@@ -19,7 +19,7 @@ namespace EndlessCatsApp.Utility.ReactiveUI
                     {
                         var d = new CompositeDisposable();
                         disposables(d);
-                        return new[] {d};
+                        return new[] { d };
                     },
                     view);
         }
@@ -36,7 +36,7 @@ namespace EndlessCatsApp.Utility.ReactiveUI
                     {
                         var d = new CompositeDisposable();
                         disposables(d);
-                        return new[] {d};
+                        return new[] { d };
                     });
         }
     }
