@@ -35,6 +35,11 @@ namespace EndlessCatsApp.iOS.Views
                 ViewModel.Refresh.Execute(true);
 
                 autoDispose(this.OneWayBind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
+
+                _rateCatsView.Swipe.Subscribe(x =>
+                {
+
+                });
             });
         }
 

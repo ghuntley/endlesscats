@@ -36,6 +36,8 @@ namespace EndlessCatsApp.iOS.Views
             this.AddSubview(CreateDraggableImageView(cat));
             this.AddSubview(CreateDraggableImageView(cat));
             this.AddSubview(CreateDraggableImageView(cat));
+
+            Swipe = Observable.Return(SwipeDirection.None);
         }
 
         public ReactiveList<Cat> ViewModel
@@ -63,10 +65,11 @@ namespace EndlessCatsApp.iOS.Views
 
             draggableImageView.OnViewSwipedToTheLeft += OnViewSwipedToTheLeft;
             draggableImageView.OnViewSwipedToTheRight += OnViewSwipedToTheRight;
+
             return draggableImageView;
         }
 
-        public IObservable<SwipeDirection> SwipeDirection { get; private set; }
+        public IObservable<SwipeDirection> Swipe { get; private set; }
 
         private void OnViewSwipedToTheLeft(object sender, EventArgs e)
         {
