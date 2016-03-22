@@ -32,14 +32,10 @@ namespace EndlessCatsApp.iOS.Views
             this.WhenActivated(autoDispose =>
             {
                 // automatically retrieve data from cache/api when the view is activated.
-                ViewModel.Refresh.Execute(true);
+                ViewModel.Refresh.Execute(null);
 
                 autoDispose(this.OneWayBind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
 
-                _rateCatsView.Swipe.Subscribe(x =>
-                {
-
-                });
             });
         }
 

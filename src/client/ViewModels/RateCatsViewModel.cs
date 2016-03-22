@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Anotar.Splat;
 using EndlessCatsApp.Core;
@@ -13,13 +14,16 @@ using ReactiveUI.Fody.Helpers;
 
 namespace EndlessCatsApp.ViewModels
 {
-    public class RateCatsViewModel : ReactiveObject
+    public class RateCatsViewModel : ReactiveObject, ISupportsActivation
     {
         private const string CatsCacheKey = BlobCacheKeys.Cats;
 
         private readonly ICatsApiService _catsApiService;
         private readonly IRatingService _ratingService;
         private readonly IStateService _stateService;
+
+        private readonly ViewModelActivator _viewModelActivator = new ViewModelActivator();
+
 
         public RateCatsViewModel(ICatsApiService catsApiService, IStateService stateService,
             IRatingService ratingService)
@@ -97,25 +101,37 @@ namespace EndlessCatsApp.ViewModels
             Refresh.IsExecuting.ToPropertyEx(this, vm => vm.IsLoading);
 
             // behaviours
-
-            // when the list of cats changes AND after 2 seconds of inactivity, persist the cats to the cache.
-            this.WhenAnyValue(vm => vm.Cats)
-                .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
-                .Subscribe(cats => PersistCatsToCache(cats));
-
-            // when the amount of cats drop below a safe level, automatically add more cats to the cache.
-            this.WhenAnyValue(vm => vm.Cats)
-                .Subscribe(cats =>
+            this.WhenActivated(
+                autoDispose =>
                 {
-                    if (cats.Count > 25)
-                    {
-                        return;
-                    }
+                    // when the list of cats changes AND after 5 seconds of inactivity, persist the cats to the cache.
+                    autoDispose(this.WhenAnyValue(vm => vm.Cats)
+                        .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
+                        .Subscribe(cats => PersistCatsToCache(cats)));
 
-                    LogTo.Info(() => $"{Cats.Count} remain in the list, automatically adding more cats.");
-                    AddMoreCats.InvokeCommand(null);
+                    // when the amount of cats drop below a safe level, automatically add more cats to the cache.
+                    autoDispose(this.WhenAnyValue(vm => vm.Cats)
+                        .Subscribe(cats =>
+                        {
+                            // don't automatically fetch cats when the viewmodel is loaded.
+                            if (cats.Count == 0)
+                            {
+                                return;
+                            }
+
+                            // we have enough cats, no need to get more.
+                            if (cats.Count > 25)
+                            {
+                                return;
+                            }
+
+                            LogTo.Info(() => $"{Cats.Count} remain in the list, automatically adding more cats.");
+                            AddMoreCats.Execute(null);
+                        }));
                 });
         }
+
+        public ViewModelActivator Activator => _viewModelActivator;
 
         public ReactiveCommand<IList<Cat>> AddMoreCats { get; }
 

@@ -53,7 +53,7 @@ namespace EndlessCatsApp
 
         protected abstract ILogger CreateLoggingService();
 
-        private IBlobCache CreateBlobCache() => BlobCache.UserAccount;
+        private IBlobCache CreateBlobCache() => BlobCache.LocalMachine;
         private ICatsApiService CreateCatsApiService() => new CatsApiService();
         private IStateService CreateStateService() => new StateService(_blobCache.Value);
         private IRatingService CreateRatingService() => new RatingService(_catsApiService.Value);

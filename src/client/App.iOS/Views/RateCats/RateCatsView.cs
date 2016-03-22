@@ -36,8 +36,6 @@ namespace EndlessCatsApp.iOS.Views
             this.AddSubview(CreateDraggableImageView(cat));
             this.AddSubview(CreateDraggableImageView(cat));
             this.AddSubview(CreateDraggableImageView(cat));
-
-            Swipe = Observable.Return(SwipeDirection.None);
         }
 
         public ReactiveList<Cat> ViewModel
