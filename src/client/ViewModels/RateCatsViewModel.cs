@@ -107,7 +107,11 @@ namespace EndlessCatsApp.ViewModels
                     // when the list of cats changes AND after 5 seconds of inactivity, persist the cats to the cache.
                     autoDispose(this.WhenAnyValue(vm => vm.Cats)
                         .Throttle(TimeSpan.FromSeconds(2), RxApp.MainThreadScheduler)
-                        .Subscribe(cats => PersistCatsToCache(cats)));
+                                .Subscribe(cats =>
+                                {
+                                    LogTo.Info(() => "2 seconds have elasped since the last user interaction, persisting cats to the cache");
+                                    PersistCatsToCache(cats);
+                                }));
 
                     // when the amount of cats drop below a safe level, automatically add more cats to the cache.
                     autoDispose(this.WhenAnyValue(vm => vm.Cats)
@@ -188,7 +192,7 @@ namespace EndlessCatsApp.ViewModels
                 _stateService.Set(CatsCacheKey, response.Results);
 
                 LogTo.Info(
-                    () => $"{response.Results.Count()} cats were retrieved from the API.");
+                    () => $"{response.Results.Count()} cats were retrieved from the cache.");
 
                 return new List<Cat>(response.Results);
             });

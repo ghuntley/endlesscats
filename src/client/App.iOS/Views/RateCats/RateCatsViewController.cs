@@ -8,7 +8,7 @@ using EndlessCatsApp.Services.State;
 using EndlessCatsApp.ViewModels;
 using ReactiveUI;
 using Splat;
-
+using Anotar.Splat;
 
 namespace EndlessCatsApp.iOS.Views
 {
@@ -36,6 +36,9 @@ namespace EndlessCatsApp.iOS.Views
 
                 autoDispose(this.OneWayBind(ViewModel, vm => vm.Cats, v => v._rateCatsView.ViewModel));
 
+                _rateCatsView.Swipes.Subscribe(x =>
+                {
+                });
             });
         }
 

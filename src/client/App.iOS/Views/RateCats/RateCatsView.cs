@@ -7,6 +7,7 @@ using EndlessCatsApp.Utility;
 using EndlessCatsApp.Services.Api;
 using ReactiveUI;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace EndlessCatsApp.iOS.Views
 {
@@ -67,14 +68,17 @@ namespace EndlessCatsApp.iOS.Views
             return draggableImageView;
         }
 
-        public IObservable<SwipeDirection> Swipe { get; private set; }
+        public IObservable<SwipeDirection> Swipes => _swipeDirection.AsObservable();
+        private Subject<SwipeDirection> _swipeDirection = new Subject<SwipeDirection>();
 
         private void OnViewSwipedToTheLeft(object sender, EventArgs e)
         {
+            _swipeDirection.OnNext(SwipeDirection.Left);
         }
 
         private void OnViewSwipedToTheRight(object sender, EventArgs e)
         {
+            _swipeDirection.OnNext(SwipeDirection.Right);
         }
     }
 }
